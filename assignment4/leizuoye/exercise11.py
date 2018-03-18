@@ -8,32 +8,109 @@
 import shelve
 import os
 import exercise4
+import msvcrt
+
 
 class User(object):
-    def user_login(self):
-        print("INuser_login")
+    def user_login(self, name=False):
+        if Main.inuse_user!="未登录":
+            return("请先退出登陆")
+        if name:
+            login_user = name
+        else:
+            login_user = input("请输入用户名:").strip()
+        if login_user in Main.user_pwd:
+            login_pwd = exercise4.User_Mange.creat_pw(self).strip()
+            if login_pwd == Main.user_pwd[login_user]:
+                Main.inuse_user = login_user
+                return("登陆成功")
+            else:
+                return("密码错误，请重新登陆")
+        else:
+            return("账号错误，请重新登陆")
 
     def user_create(self):
-        print("IN user_create")
-        a=exercise4.User_Mange.creat_pw(self)
+        set_user = input("请输入用户名:").strip()
+        if set_user in Main.user_pwd:
+            print("已注册,请登陆")
+            self.user_login(set_user)
+        set_pwd = exercise4.User_Mange.creat_pw(self).strip()
+        Main.user_pwd.update({set_user: set_pwd})
+        Main.inuse_user = set_user
+        return(None)
 
     def user_out(self):
-        print("IN user_out")
+        confirm = input("输入Y以确定退出")
+        if confirm == "y"or confirm == "Y":
+            print_name = Main.inuse_user
+            Main.inuse_user = str()
+            return("%s,您已退出" % print_name)
 
 
 class Cart(object):
 
     def view_cart(self):
-        print("INview_cart")
+        if Main.inuse_user in Main.user_cart:
+            amount_usercart = len(Main.user_cart[Main.inuse_user])
+            print("总共有%s个购物车，以下为购物车名称及拥有商品:" % amount_usercart)
+            for i in range(amount_usercart):
+                print("\n{0}.{1}:".format(
+                    i+1, Main.user_cart[Main.inuse_user][i]))
+                Item.view_item(self)
+            print("\n按任意键以继续")
+            msvcrt.getch()
+        else:
+            print("暂无购物车，去新建一个吧!")
+            return(Cart.add_cart(self))
 
     def add_cart(self):
-        print("INadd_cart")
+        new_cart = input("请输入新购物车名:")
+        if Main.inuse_user in Main.user_cart:
+            if new_cart in Main.user_cart[Main.inuse_user]:
+                Main.inuse_cart = new_cart
+                return("已有该购物车,已切换至该购物车")
+            else:
+                Main.user_cart[Main.inuse_user].append(new_cart)
+                Main.inuse_cart = new_cart
+                return("成功添加并进入该购物车")
+        else:
+            Main.user_cart.update({Main.inuse_user: [new_cart]})
+            Main.inuse_cart = new_cart
+            return("成功添加并进入该购物车")
 
     def choice_cart(self):
-        print("INchoice_cart")
+        try:
+            amount_usercart = len(Main.user_cart[Main.inuse_user])
+        except KeyError:
+            print("暂无购物车，去新建一个吧!")
+            return(Cart.add_cart(self))
+        if amount_usercart == 1:
+            Main.inuse_cart = Main.user_cart[Main.inuse_user][0]
+            return("仅有一个购物车，已进入购物车:%s" % Main.user_cart[Main.inuse_user][0])
+        else:
+            while True:
+                for i in range(amount_usercart):
+                    print("{0}.{1}".format(
+                        i+1, Main.user_cart[Main.inuse_user][i]))
+                choice_cart = input("请输入购物车序号:").strip()
+                try:
+                    choice_cart = int(choice_cart)
+                except (ValueError, TypeError):
+                    print("输入有误,请输入数字")
+                    continue
+                if choice_cart-1 in range(amount_usercart):
+                    Main.inuse_cart = Main.user_cart[Main.inuse_user][choice_cart-1]
+                    return("已进入购物车:%s" % Main.inuse_cart)
+                else:
+                    print("请输入正确序号")
 
     def del_cart(self):
-        print("INdel_cart")
+        confirm = input("输入Y以确定删除")
+        if confirm == "y"or confirm == "Y":
+            print_name = Main.inuse_cart
+            Main.user_cart[Main.inuse_user].remove(print_name)
+            Main.inuse_cart = "未选择"
+            return("您已删除购物车%s" % print_name)
 
 
 class Item(object):
@@ -41,26 +118,40 @@ class Item(object):
         print("INview_item")
 
     def add_item(self):
-        print("INadd_item")
+        cartid = Main.inuse_user+"-"+Main.inuse_cart
+        new_item = input("请输入新商品名:")
+        if Main.inuse_user in Main.cart_item:
+            if new_cart in Main.cart_item[Main.inuse_cart]:
+                Main.inuse_cart = new_cart
+                return("已有该购物车,已切换至该购物车")
+            else:
+                Main.cart_item[Main.inuse_user].append(new_cart)
+                Main.inuse_cart = new_cart
+                return("成功添加并进入该购物车")
+        else:
+            Main.cart_item.update({Main.inuse_user: [new_cart]})
+            Main.inuse_cart = new_cart
+            return("成功添加并进入该购物车")
 
     def del_item(self):
         print("INdel_item")
 
 
 class Main(object):  # 引用同一py文件下其它类的方法，是不是还有其它方法
+    (user_pwd, user_cart, cart_item) = (dict(), dict(), dict())
+    inuse_user = "未登录"
+    inuse_cart = "未选择"
+
     def __init__(self):
-        '''尝试打开B2C读取3个字典，打开失败则重新建立3个字典'''
-        (self.user_pwd, self.user_cart, self.cart_item) = (dict(), dict(), dict())
+        '''尝试打开B2C读取3个字典'''
         try:
             B2C_save = shelve.open("B2C")
-            self.user_pwd = B2C_save["user_pwd"]
-            self.user_cart = B2C_save["user_cart"]
-            self.cart_item = B2C_save["cart_item"]
+            Main.user_pwd = B2C_save["user_pwd"]
+            Main.user_cart = B2C_save["user_cart"]
+            Main.cart_item = B2C_save["cart_item"]
             B2C_save.close()
         except (IOError, KeyError, ImportError):
             pass
-        self.inuse_user = str()
-        self.inuse_cart = str()
         self.menu()
 
     def __del__(self):
@@ -96,11 +187,17 @@ class Main(object):  # 引用同一py文件下其它类的方法，是不是还�
             choice_result = self.check_input(hint, choice_dict)
             if choice_result == None:
                 print("还未开放请重选")
+            elif choice_result == "no logining user":
+                print("请先登陆再进行该操作")
+            elif choice_result == "no logining cart":
+                print("请先选择购物车在进行该操作")
             else:
                 break
-        choice_result(self)
+        run_hint = choice_result(self)
         if choice_result != Main.close_sys:
-            # print(('\n'*80))#伪清屏，好像IDLE中没有真正清屏的方法
+            print(('\n'*80))  # 伪清屏，好像IDLE中没有真正清屏的方法
+            if not run_hint is None:
+                print(run_hint)
             self.menu()
 
     def check_input(self, hint, choice_dict):
@@ -108,7 +205,12 @@ class Main(object):  # 引用同一py文件下其它类的方法，是不是还�
             user_input = input(hint)
             try:
                 if int(user_input) in choice_dict:
-                    return choice_dict[int(user_input)]
+                    if int(user_input) in (2, 3, 4, 5, 6, 7, 8, 9) and Main.inuse_user == "未登录":
+                        return("no logining user")
+                    elif int(user_input) in (6, 7, 8, 9) and Main.inuse_cart == "未选择":
+                        return("no logining cart")
+                    else:
+                        return choice_dict[int(user_input)]
                 else:
                     raise TypeError
             except (TypeError, ValueError):
@@ -117,10 +219,12 @@ class Main(object):  # 引用同一py文件下其它类的方法，是不是还�
     def close_sys(self):
         """3个字典写回"""
         B2C_save = shelve.open("B2C", writeback=True)
-        B2C_save["user_pwd"] = self.user_pwd
-        B2C_save["user_cart"] = self.user_cart
-        B2C_save["cart_item"] = self.cart_item
+        B2C_save["user_pwd"] = Main.user_pwd
+        B2C_save["user_cart"] = Main.user_cart
+        B2C_save["cart_item"] = Main.cart_item
         B2C_save.close()
 
 
 a1 = Main()
+print(Main.user_pwd)
+print(Main.user_cart)

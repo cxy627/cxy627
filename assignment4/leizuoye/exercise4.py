@@ -75,7 +75,8 @@ class User_Mange(object):
         self.save_file.close()
 
 
-a1 = User_Mange()
-a1.add_user("python", "123456")
-a1._User_Mange__echo_user()
-a1.login()
+if __name__ =="__main__":
+    a1 = User_Mange()
+    a1.add_user("python", "123456")
+    a1._User_Mange__echo_user()
+    a1.login()
