@@ -7,7 +7,7 @@
 """
 import shelve
 import os
-import 4.py
+import exercise4
 
 class User(object):
     def user_login(self):
@@ -15,6 +15,7 @@ class User(object):
 
     def user_create(self):
         print("IN user_create")
+        a=exercise4.User_Mange.creat_pw(self)
 
     def user_out(self):
         print("IN user_out")
