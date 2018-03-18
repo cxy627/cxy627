@@ -13,7 +13,7 @@ import msvcrt
 
 class User(object):
     def user_login(self, name=False):
-        if Main.inuse_user!="未登录":
+        if Main.inuse_user != "未登录":
             return("请先退出登陆")
         if name:
             login_user = name
@@ -43,7 +43,7 @@ class User(object):
         confirm = input("输入Y以确定退出")
         if confirm == "y"or confirm == "Y":
             print_name = Main.inuse_user
-            Main.inuse_user = str()
+            Main.inuse_user = "未登录"
             return("%s,您已退出" % print_name)
 
 
@@ -56,7 +56,8 @@ class Cart(object):
             for i in range(amount_usercart):
                 print("\n{0}.{1}:".format(
                     i+1, Main.user_cart[Main.inuse_user][i]))
-                Item.view_item(self)
+                Item.view_item(self, Main.inuse_user,
+                               Main.user_cart[Main.inuse_user][i])
             print("\n按任意键以继续")
             msvcrt.getch()
         else:
@@ -114,27 +115,61 @@ class Cart(object):
 
 
 class Item(object):
-    def view_item(self):
-        print("INview_item")
+    def view_item(self, input_user=None, input_cart=None):
+        pause =True
+        if not (input_user == None or input_cart == None):
+            cartid = input_user+"-"+input_cart
+            pause = False
+        else:
+            cartid = Main.inuse_user+"-"+Main.inuse_cart
+        if cartid in Main.cart_item:
+            for key_item in Main.cart_item[cartid]:
+                key_amount = Main.cart_item[cartid][key_item]
+                print("\n       {0}*{1}".format(key_item, key_amount))
+            if pause:
+                print("按任意键以继续")
+                msvcrt.getch()       
+        else:
+            print("\n       购物车中无任何商品")
+            if pause:
+                print("按任意键以继续")
+                msvcrt.getch()
+        return(None)
 
     def add_item(self):
         cartid = Main.inuse_user+"-"+Main.inuse_cart
-        new_item = input("请输入新商品名:")
-        if Main.inuse_user in Main.cart_item:
-            if new_cart in Main.cart_item[Main.inuse_cart]:
-                Main.inuse_cart = new_cart
-                return("已有该购物车,已切换至该购物车")
+        new_item = input("请输入添加/减少的商品名:")
+        try:
+            have_amount = Main.cart_item[cartid][new_item]
+            inamount_hint = "购物车中已有{0}*{1},请输入增加/减少的数量:".format(
+                new_item, have_amount)
+        except KeyError:
+            inamount_hint = "购物车中暂无该商品,请输入购买的数量:"
+        try:
+            new_amount = int(input(inamount_hint))
+        except (ValueError, TypeError):
+            return('请输入正确数字')
+        if cartid in Main.cart_item:
+            if new_item in Main.cart_item[cartid]:
+                done_amount = new_amount+Main.cart_item[cartid][new_item]
+                if done_amount <= 0:
+                    done_amount = 0
+                    Main.cart_item[cartid].pop(new_item)
+                    return("调整后数量为0,已删除该商品")
+                hint = ("已将{0}的数量由{1}个调整为{2}个".format(
+                    new_item, Main.cart_item[cartid][new_item], done_amount))
+                Main.cart_item[cartid][new_item] = done_amount
+                return(hint)
             else:
-                Main.cart_item[Main.inuse_user].append(new_cart)
-                Main.inuse_cart = new_cart
-                return("成功添加并进入该购物车")
+                if new_amount < 0:
+                    return("不可添加少于0的商品至购物车")
+                Main.cart_item[cartid].update({new_item: new_amount})
+                return("已将{0}个{1}加入购物车".format(new_amount, new_item))
         else:
-            Main.cart_item.update({Main.inuse_user: [new_cart]})
-            Main.inuse_cart = new_cart
-            return("成功添加并进入该购物车")
-
-    def del_item(self):
-        print("INdel_item")
+            if new_amount < 0:
+                return("不可添加少于0的商品至购物车")
+            Main.cart_item.update({cartid: {new_item: new_amount}})
+            return("已将{0}个{1}加入购物车".format(new_amount, new_item))
 
 
 class Main(object):  # 引用同一py文件下其它类的方法，是不是还有其它方法
@@ -152,6 +187,7 @@ class Main(object):  # 引用同一py文件下其它类的方法，是不是还�
             B2C_save.close()
         except (IOError, KeyError, ImportError):
             pass
+        print(('\n'*80))
         self.menu()
 
     def __del__(self):
@@ -174,15 +210,14 @@ class Main(object):  # 引用同一py文件下其它类的方法，是不是还�
 5.选择购物车
 6.删除购物车
 7.查看商品
-8.添加商品
-9.删除商品
-88.退出系统
+8.添加/减少商品
+9.退出系统
 
         '''
         print(menu)
-        choice_dict = dict(zip((0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 88),
-                               (User.user_login, User.user_create, User.user_out, Cart.view_cart, Cart.add_cart, Cart.choice_cart, Cart.del_cart, Item.view_item, Item.add_item, Item.del_item, Main.close_sys)))
-        hint = "请输入数字0-9/88:"
+        choice_dict = dict(zip((0, 1, 2, 3, 4, 5, 6, 7, 8, 9),
+                               (User.user_login, User.user_create, User.user_out, Cart.view_cart, Cart.add_cart, Cart.choice_cart, Cart.del_cart, Item.view_item, Item.add_item, Main.close_sys)))
+        hint = "请输入数字0-9:"
         while True:
             choice_result = self.check_input(hint, choice_dict)
             if choice_result == None:
@@ -205,9 +240,9 @@ class Main(object):  # 引用同一py文件下其它类的方法，是不是还�
             user_input = input(hint)
             try:
                 if int(user_input) in choice_dict:
-                    if int(user_input) in (2, 3, 4, 5, 6, 7, 8, 9) and Main.inuse_user == "未登录":
+                    if int(user_input) in (2, 3, 4, 5, 6, 7, 8) and Main.inuse_user == "未登录":
                         return("no logining user")
-                    elif int(user_input) in (6, 7, 8, 9) and Main.inuse_cart == "未选择":
+                    elif int(user_input) in (6, 7, 8) and Main.inuse_cart == "未选择":
                         return("no logining cart")
                     else:
                         return choice_dict[int(user_input)]
@@ -224,7 +259,5 @@ class Main(object):  # 引用同一py文件下其它类的方法，是不是还�
         B2C_save["cart_item"] = Main.cart_item
         B2C_save.close()
 
-
-a1 = Main()
-print(Main.user_pwd)
-print(Main.user_cart)
+if __name__=="__main__":
+    Main()
