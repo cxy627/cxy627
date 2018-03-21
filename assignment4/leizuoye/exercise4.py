@@ -15,26 +15,32 @@ class User_Mange(object):
         self.save_file = open("savefile", "wb")
 
     def add_user(self, name, password):
-        assert isinstance(name, (int, str, float, tuple)), "用户名需为不可变对象"
-        ntime = time.time()
-        self.user_text.update({name: (password, ntime)})
-
+        if name not in self.user_text:
+            assert isinstance(name, (int, str, float, tuple)), "用户名需为不可变对象"
+            ntime = time.time()
+            self.user_text.update({name:{password: ntime}})
+        else:
+            print("已创建的用户，本次操作无效")
     def __echo_user(self):
         for key in self.user_text:
-            print("用户名:{0} 密码:{1} 最后注册/登陆时间:{2}"
-                  .format(key, self.user_text[key][0],
-                          sft("%Y-%m-%d %H:%M:%S", time.localtime(self.user_text[key][1]))))
+            print("用户名:%s" % key)
+            for count in self.user_text[key]:
+                print("密码:{0} 创建密码时间:{1}".format(count,sft("%Y-%m-%d %H:%M:%S", time.localtime(self.user_text[key][count]))))
 
-    def login(self):
-        login_user = input("请输入用户名:")
-        get_key = self.user_text.get(login_user)[0]
-        if get_key == None:
+    def login(self,login_name):
+        get_keydict = self.user_text.get(login_name)
+        if get_keydict == None:
             print("无此用户")
             return None
         else:
+            ctime =0
+            for cpwd in get_keydict:
+                if get_keydict[cpwd]>ctime:
+                    time=get_keydict[cpwd]
+                    get_key = cpwd
             login_pwd = self.creat_pw()
             if str(login_pwd) == str(get_key):
-                self.user = str(login_user)
+                self.user = str(login_name)
                 print("登陆成功")
                 return self.user
             else:
@@ -79,4 +85,4 @@ if __name__ =="__main__":
     a1 = User_Mange()
     a1.add_user("python", "123456")
     a1._User_Mange__echo_user()
-    a1.login()
+    a1.login("python")
