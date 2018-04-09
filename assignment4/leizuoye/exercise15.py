@@ -8,6 +8,7 @@ __getattr__，再找不到就会产生AttributeError，由于定义了__getattr_
 返回在内置函数open中找到的同名方法
 '''
 
+
 class capopen(object):
     def __init__(self, file, mode="r", buf=-1, encoding="utf-8", errors=None):
         self.file = open(file, mode, buf, errors)
@@ -24,8 +25,8 @@ class capopen(object):
     def __getattr__(self, attr):
         return(getattr(self.file, attr))
 
-#下面这两个方法为何得自己进行定义,getattr并不能在open中找到这两个方法
-#而直接使用with open 反而可以
+# 下面这两个方法为何得自己进行定义,getattr并不能在open中找到这两个方法
+# 而直接使用with open 反而可以
     def __enter__(self):
         return self.file
 

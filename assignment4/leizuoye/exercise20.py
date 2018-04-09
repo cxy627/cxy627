@@ -15,7 +15,6 @@ class Time60(object):
             input_tran[type(kwarg[0])](kwarg)
             self.recount()
 
-
     def indict(self, kwarg):
         self.hr = kwarg[0]["hr"]
         self.min = kwarg[0]["min"]
@@ -57,13 +56,14 @@ class Time60(object):
         return(self.__class__(self.hr, self.min))
 
     def recount(self):
-        while self.min>=60:
-            self.min -=60
-            self.hr+=1
-        while self.hr>=24:
-            self.hr-=24
+        while self.min >= 60:
+            self.min -= 60
+            self.hr += 1
+        while self.hr >= 24:
+            self.hr -= 24
 
-if __name__=="__main__":
+
+if __name__ == "__main__":
     a1 = Time60(13, 50)
     print(a1)
     print(repr(a1))
