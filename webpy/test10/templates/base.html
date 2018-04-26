@@ -1,0 +1,29 @@
+$def with (page)
+<html lang="zh-CN">
+
+<head>
+    <meta charset="utf-8"> 
+    $if "title" in page:
+        <title>$page.title</title>
+    $else:
+        <title>My wiki</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="author" content="cxy">
+</head>
+
+<body>
+    <ul>
+        <li>
+            <a href="/">Home</a>
+        </li>
+        <li>
+            <a href="/new">New Page</a>
+        </li>
+        <li></li>
+
+    </ul>
+    $:page
+</body>
+
+</html>

@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="utf-8">
+        <title>主页</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+        <meta name="author" content="cxy">
+        <meta name="keywords" content="输入关键词">
+        <meta name="description" content="输入网页描述">
+    </head>
+    {% load staticfiles %}
+    <body>
+        <h1>rango say..</h1>
+        <div>
+        hey there partner!<br/>
+        <strong>{{boldmessage}}</strong>
+        </div>
+        <div>
+            <a href="/rango/about/">About</a><br/>
+            <img src="{% static "rango/image/1.jpg" %}" alt="fapiao">
+        </div>
+    </body>
+</html>
