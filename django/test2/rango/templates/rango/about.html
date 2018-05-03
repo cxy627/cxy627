@@ -1,22 +1,28 @@
-<!DOCTYPE html>
+{% extends 'rango/base_bootstrap.html' %}
 {% load staticfiles %}
-<html lang="zh-CN">
-    <head>
-        <meta charset="utf-8">
-        <title>ABOUT</title>
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-        <meta name="author" content="cxy">
-        <meta name="keywords" content="输入关键词">
-        <meta name="description" content="输入网页描述">
-    </head>
-    <body>
-        <div>
-            <h1>"Rango says here is the about page.</h1>
-            <a href='/rango/'>Index</a>
-            <li>This tutorial has been put togetherby cxy</li>
-            <img src="{{ MEDIA_URL }}/rango/2.jpg " alt="yifu">
-            {{ MEDIA_URL }}rango/2.jpg 
-        </div>
-    </body>
-</html>
+
+
+{% block title_block %}
+    About
+{% endblock title_block %}
+
+
+{% block body_block %}
+    <h1>"Rango says here is the about page.</h1>
+    <a href='{% url 'rango:index' %}'>Index</a>
+    <li>This tutorial has been put togetherby cxy</li>
+    <img src="{{ MEDIA_URL }}/rango/2.jpg " alt="yifu">
+    {{ MEDIA_URL }}rango/2.jpg 
+    <button	class="btn   btn-primary"
+        onClick="alert('You clicked the button using JavaScript.');"> 
+        Click Me - I run JavaScript
+    </button>
+    <button class="btn btn-primary" id="about-btn" >
+        点击我哦</button>
+    <p>这是个示例</p>
+    <p>这是另一个示例</p>
+    <div id="msg">
+        我又是一个示例
+    </div>
+
+{% endblock body_block %}

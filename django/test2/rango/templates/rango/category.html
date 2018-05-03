@@ -1,0 +1,86 @@
+{% extends 'rango/base_bootstrap.html' %}
+{%  load  staticfiles %}
+
+
+{% block title_block %}
+    {% if category %}
+        {{ category }}类列表
+    {% else %}
+        类别不存在
+    {% endif %}
+{% endblock title_block %}
+{% block body_block %}
+    {% if category %}
+    <h1>{{ category.name }}</h1>
+    <div>
+        <strong id="like-count" >{{ category.likes }}</strong>人喜欢这个类别
+        {% if user.is_authenticated %}
+            <button id="likes" data-catid="{{ category.id }}" class="btn btn-primary btn-sm" type="button" >
+                Like
+            </button>
+        {% endif %}
+    </div>
+    {% if pages %}
+        <ul>
+            {% for page in pages %}
+                <li>
+                    <a href="{% url 'rango:goto' %}?page_id={{ page.id }}">{{ page.title }}</a>
+                    {%  if  page.views  >  1  %}
+                        ({{ page.views }} views)
+                    {%  elif  page.views  ==  1  %} 
+                        ({{  page.views  }}  view)
+                    {%  endif  %}
+                    
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <strong>没有详情页哦</strong>
+        <br/><br/><br/>
+    {% endif %}
+
+    <a href="{% url 'rango:add_page'  category.slug %}">添加新页面</a>
+
+    {% if category and user.is_authenticated %}
+        <hr>
+        <form lass="form-inline" id="user_form"
+            method="post" action="{% url 'rango:show_category' category.slug %}">
+            {% csrf_token %}
+            <div class="form-group">
+                <input type="text" class="form-control" size="50" 
+                    name="query" value="{{query}}" id="query">
+            </div>
+            <button class="btn btn-primary" type="submit" 
+                name="submit" value="Search">
+                搜索
+            </button>
+        </form>
+    {% endif %}
+    
+    {% if result_list %}
+        <div>
+        <h3>搜索结果</h3>
+        <!-- Display search results in an  ordered list  -->
+        <div class="list-group">
+            {%  for result in result_list  %}
+                <div class="list-group-item">
+                <h4    class="list-group-item-heading">
+                    <a href="{{ result.link }}">
+                        {{ result.title }}
+                    </a>
+                </h4>
+                    <p  class="list-group-item-text">
+                        {{  result.summary   }}
+                    </p>
+                </div>
+            {%  endfor  %}
+        </div>
+        </div>
+    {%  endif %}
+    
+            
+
+    {% else %}
+    <strong>这个分类不存在，你乱写的吧</strong>
+    {% endif %}
+{% endblock body_block %}

@@ -1,0 +1,14 @@
+{% extends "rango/base_bootstrap.html" %}
+{% load staticfiles %}
+
+{% block title_block %}
+    注册
+{% endblock title_block %}
+
+{% block body_block %}
+    <form action="{% url 'rango:register_profile' username %}" method='POST' id='userprofile_form' enctype='multipart/form-data'>
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input type="submit" value="提交">
+    </form>
+{% endblock body_block %}

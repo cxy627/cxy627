@@ -1,0 +1,37 @@
+{% extends "rango/base_bootstrap.html" %}
+
+{% load staticfiles %}
+
+{% block title_block %}
+    {{ selecteduser.username }} Profile
+{% endblock title_block %}
+
+{% block body_block %}
+    <h1>
+        {{selecteduser.username}}  资料
+    </h1>
+    {% if userprofile.picture %}
+        <img src="{{ MEDIA_URL }}{{userprofile.picture }}" width="300" height="300" alt="{{user.username}}" />
+    {% else %}
+        <img src="http://lorempixel.com/300/300/people/" img width="300" height="300" alt="{{user.username}}"/>
+    {% endif %}
+    <br/>
+    <div id="edit_profile">
+        {% if selecteduser.username == user.username %}
+            <form action="{% url 'rango:profile' selecteduser %}" method="POST" enctype="multipart/form-data" >
+                {% csrf_token %}
+                {{ form.as_p }}
+                <input type="submit" value="更新" >
+            </form>
+        {% else %}
+            <p>
+                <strong>
+                网址:
+                </strong>
+                <a href="{{userprofile.website}}">
+                    {{userprofile.website}}
+                </a>
+            </p>                
+        {% endif %}
+    </div>
+{% endblock body_block %}

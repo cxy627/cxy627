@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+{% load rango_template_tag %}
+<html lang="zh-CN">
+    <head>
+        <meta charset="utf-8">
+        <title>
+            rango-
+            {% block title_block %}
+                how to Tango with Django
+            {% endblock title_block %}
+        </title>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+        <meta name="author" content="cxy">
+        <meta name="keywords" content="输入关键词">
+        <meta name="description" content="输入网页描述">
+    </head>
+    {% block style_block %}
+    {% endblock style_block %}
+    <body>
+
+        <div>
+            {% block body_block %}
+            {% endblock body_block %}
+        </div>
+        <hr />
+        <div>
+            {% block sidebar_block %}
+                {% get_category_list category %}
+            {% endblock sidebar_block %}
+        </div>
+        <hr />
+        <div>
+            <ul>
+                <li><a href="{% url 'rango:add_category' %}">添加类别</a></li>
+                <li><a href="{% url 'registration_register' %}">注册</a></li>
+                <li><a href="{% url 'auth_login' %}">登陆</a></li>
+                {% if user.is_authenticated %}
+                    <li><a href="{% url 'auth_logout' %}?next=/rango/">退出登陆</a></li>
+                {% endif %}
+                <li><a href="{% url 'rango:index' %}">主页</a></li>
+                <li><a href="{% url 'rango:about' %}">关于rango</a></li>
+            </ul>
+        </div>
+        <div>
+            {% block end_block %}
+            {% endblock end_block %}
+        </div>
+    </body>
+</html>

@@ -1,24 +1,53 @@
-<!DOCTYPE html>
-<html lang="zh-CN">
-    <head>
-        <meta charset="utf-8">
-        <title>主页</title>
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-        <meta name="author" content="cxy">
-        <meta name="keywords" content="输入关键词">
-        <meta name="description" content="输入网页描述">
-    </head>
-    {% load staticfiles %}
-    <body>
-        <h1>rango say..</h1>
-        <div>
-        hey there partner!<br/>
-        <strong>{{boldmessage}}</strong>
+{% extends 'rango/base_bootstrap.html' %}
+{%  load  staticfiles %}
+
+{% block title_block %}
+    主页
+{%  endblock  %}
+
+{%  block  body_block  %}
+    <div class="jumbotron">
+        <h1  class="display-3">Rango 说...</h1>
+        {% if user.is_authenticated %}
+            <h1>欢迎 {{ user.username }}!</h1>
+        {%  else %}
+            <h1>欢迎!  </h1>
+        {%  endif %}
+    </div>
+
+    <div class="row marketing">
+
+        <div class="col-lg-6">
+            <h4>最受欢迎的类型</h4>
+            <p>
+            {% if categories %}
+                <ul class="list-group"> 
+                    {% for category in categories  %}
+                        <li class="list-group-item"><a  href="{%  url  'rango:show_category'  category.slug  %}">
+                        {{  category.name  }}</a></li>
+                    {%  endfor  %}
+                </ul>
+            {%  else %}
+                <strong>暂无类型</strong>
+            {%  endif %}
+            </p>
         </div>
-        <div>
-            <a href="/rango/about/">About</a><br/>
-            <img src="{% static "rango/image/1.jpg" %}" alt="fapiao">
+
+        <div class="col-lg-6">
+            <h4>最多观看的文章</h4>
+            <p>
+            {% if pages %}
+                <ul class="list-group"> 
+                    {% for page in pages   %}
+                        <li class="list-group-item"><a  href="{{  page.url  }}">{{  page.title  }}</a></li>
+                    {%  endfor  %}
+                </ul>
+            {%  else %}
+                <strong>暂无文章</strong>
+            {%  endif %}
+            </p>
         </div>
-    </body>
-</html>
+
+    </div>
+    <img src="{% static 'rango/image/1.jpg' %}" alt="fapiao">
+{%  endblock  %}

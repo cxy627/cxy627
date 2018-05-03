@@ -1,0 +1,22 @@
+{% extends "rango/base.html" %}
+{% load staticfiles %}
+
+{% block title_block %}
+    注册
+{% endblock title_block %}
+
+{% block body_block %}
+    {% if registered %}
+        Rango says:注册成功
+    {% else %}
+        Rango says:欢迎注册
+        <form id='user_form' method='post' action="{% url 'rango:register' %}" enctype='multipart/form-data' >
+            {% csrf_token %}
+            {{ user_form.as_p }}
+            {{ profile_form.as_p }}
+            <input type="submit" name="submit" value="注册" >
+        </form>
+        {% block sidebar_block %}
+        {% endblock sidebar_block %}
+    {% endif %}
+{% endblock body_block %}
